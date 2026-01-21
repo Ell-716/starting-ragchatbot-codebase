@@ -119,6 +119,56 @@ class CourseSearchTool(Tool):
 
         return "\n\n".join(formatted)
 
+
+class CourseOutlineTool(Tool):
+    """Tool for retrieving course outline/structure"""
+
+    def __init__(self, vector_store: VectorStore):
+        self.store = vector_store
+
+    def get_tool_definition(self) -> Dict[str, Any]:
+        return {
+            "name": "get_course_outline",
+            "description": "Get the complete outline of a course including course title, course link, and list of all lessons with their numbers and titles. Use this when users ask about what a course covers, what lessons are in a course, or want an overview of course structure.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "course_name": {
+                        "type": "string",
+                        "description": "Course title or name (partial matches work)"
+                    }
+                },
+                "required": ["course_name"]
+            }
+        }
+
+    def execute(self, course_name: str) -> str:
+        metadata = self.store.get_course_metadata(course_name)
+
+        if not metadata:
+            return f"No course found matching '{course_name}'"
+
+        return self._format_outline(metadata)
+
+    def _format_outline(self, metadata: Dict[str, Any]) -> str:
+        lines = [
+            f"Course: {metadata.get('title', 'Unknown')}",
+            f"Course Link: {metadata.get('course_link', 'Not available')}",
+            "",
+            "Lessons:"
+        ]
+
+        lessons = metadata.get('lessons', [])
+        if lessons:
+            sorted_lessons = sorted(lessons, key=lambda x: x.get('lesson_number', 0))
+            for lesson in sorted_lessons:
+                lines.append(f"- Lesson {lesson.get('lesson_number', '?')}: {lesson.get('lesson_title', 'Untitled')}")
+        else:
+            lines.append("- No lessons found")
+
+        return "\n".join(lines)
+
+
 class ToolManager:
     """Manages available tools for the AI"""
     
