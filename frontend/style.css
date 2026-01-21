@@ -523,13 +523,10 @@ details[open] .suggested-header::before {
 
 /* New Chat Button */
 .new-chat-section {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
 }
 
 .new-chat-btn {
-    width: 100%;
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-secondary);
