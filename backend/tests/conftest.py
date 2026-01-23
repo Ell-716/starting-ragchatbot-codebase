@@ -12,6 +12,119 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from vector_store import SearchResults
 
 
+# ============================================================================
+# Configuration Fixtures
+# ============================================================================
+
+@pytest.fixture
+def mock_config():
+    """Create a mock configuration object for testing"""
+    config = Mock()
+    config.MAX_RESULTS = 5
+    config.ANTHROPIC_API_KEY = "test-api-key"
+    config.ANTHROPIC_MODEL = "claude-sonnet-4-20250514"
+    config.CHUNK_SIZE = 800
+    config.CHUNK_OVERLAP = 100
+    config.CHROMA_PATH = "/tmp/test_chroma"
+    config.EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+    config.MAX_HISTORY = 2
+    return config
+
+
+# ============================================================================
+# RAG System Fixtures
+# ============================================================================
+
+@pytest.fixture
+def mock_rag_system():
+    """Create a mock RAGSystem for API testing"""
+    rag = Mock()
+
+    # Mock query method
+    rag.query.return_value = (
+        "This is a test answer about the course material.",
+        [{"text": "ML Fundamentals - Lesson 1", "link": "https://example.com/lesson1"}]
+    )
+
+    # Mock session manager
+    rag.session_manager = Mock()
+    rag.session_manager.create_session.return_value = "test-session-123"
+    rag.session_manager.clear_session.return_value = None
+
+    # Mock get_course_analytics
+    rag.get_course_analytics.return_value = {
+        "total_courses": 3,
+        "course_titles": ["ML Fundamentals", "Python Basics", "Data Science 101"]
+    }
+
+    return rag
+
+
+@pytest.fixture
+def mock_rag_system_empty():
+    """Create a mock RAGSystem with no courses"""
+    rag = Mock()
+
+    rag.query.return_value = (
+        "I don't have any course materials to search.",
+        []
+    )
+
+    rag.session_manager = Mock()
+    rag.session_manager.create_session.return_value = "empty-session-456"
+
+    rag.get_course_analytics.return_value = {
+        "total_courses": 0,
+        "course_titles": []
+    }
+
+    return rag
+
+
+@pytest.fixture
+def mock_rag_system_error():
+    """Create a mock RAGSystem that raises errors"""
+    rag = Mock()
+
+    rag.query.side_effect = Exception("Database connection failed")
+
+    rag.session_manager = Mock()
+    rag.session_manager.create_session.return_value = "error-session-789"
+    rag.session_manager.clear_session.side_effect = Exception("Session not found")
+
+    rag.get_course_analytics.side_effect = Exception("Analytics unavailable")
+
+    return rag
+
+
+# ============================================================================
+# Session Manager Fixtures
+# ============================================================================
+
+@pytest.fixture
+def mock_session_manager():
+    """Create a mock SessionManager"""
+    manager = Mock()
+    manager.create_session.return_value = "session-abc-123"
+    manager.get_conversation_history.return_value = None
+    manager.add_exchange.return_value = None
+    manager.clear_session.return_value = None
+    return manager
+
+
+@pytest.fixture
+def mock_session_manager_with_history():
+    """Create a mock SessionManager with existing conversation history"""
+    manager = Mock()
+    manager.create_session.return_value = "session-with-history"
+    manager.get_conversation_history.return_value = [
+        {"role": "user", "content": "What is machine learning?"},
+        {"role": "assistant", "content": "Machine learning is..."}
+    ]
+    manager.add_exchange.return_value = None
+    return manager
+
+
 @pytest.fixture
 def sample_search_results():
     """Create sample successful search results"""
