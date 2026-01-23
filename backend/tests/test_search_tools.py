@@ -1,20 +1,21 @@
 """Tests for CourseSearchTool - the search tool used by AI"""
 
-import pytest
-from unittest.mock import Mock
-import sys
 import os
+import sys
+from unittest.mock import Mock
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from search_tools import CourseSearchTool, CourseOutlineTool, ToolManager
+from search_tools import CourseOutlineTool, CourseSearchTool, ToolManager
 from vector_store import SearchResults
 
 
 class TestCourseSearchToolExecute:
     """Test CourseSearchTool.execute() method"""
 
-    def test_execute_returns_formatted_results(self, mock_vector_store, sample_search_results):
+    def test_execute_returns_formatted_results(
+        self, mock_vector_store, sample_search_results
+    ):
         """Test successful search returns formatted content"""
         mock_vector_store.search.return_value = sample_search_results
 
@@ -24,9 +25,7 @@ class TestCourseSearchToolExecute:
         assert "[ML Fundamentals - Lesson 1]" in result
         assert "machine learning basics" in result
         mock_vector_store.search.assert_called_once_with(
-            query="machine learning",
-            course_name=None,
-            lesson_number=None
+            query="machine learning", course_name=None, lesson_number=None
         )
 
     def test_execute_with_empty_results_returns_message(self, mock_vector_store):
@@ -59,9 +58,7 @@ class TestCourseSearchToolExecute:
         tool.execute(query="test", course_name="ML Course")
 
         mock_vector_store.search.assert_called_with(
-            query="test",
-            course_name="ML Course",
-            lesson_number=None
+            query="test", course_name="ML Course", lesson_number=None
         )
 
     def test_execute_with_lesson_filter(self, mock_vector_store, sample_search_results):
@@ -72,9 +69,7 @@ class TestCourseSearchToolExecute:
         tool.execute(query="test", lesson_number=2)
 
         mock_vector_store.search.assert_called_with(
-            query="test",
-            course_name=None,
-            lesson_number=2
+            query="test", course_name=None, lesson_number=2
         )
 
     def test_execute_with_both_filters(self, mock_vector_store, sample_search_results):
@@ -85,9 +80,7 @@ class TestCourseSearchToolExecute:
         tool.execute(query="test", course_name="ML Course", lesson_number=3)
 
         mock_vector_store.search.assert_called_with(
-            query="test",
-            course_name="ML Course",
-            lesson_number=3
+            query="test", course_name="ML Course", lesson_number=3
         )
 
     def test_execute_tracks_sources(self, mock_vector_store, sample_search_results):
@@ -139,8 +132,8 @@ class TestCourseOutlineTool:
             "course_link": "https://example.com/ml",
             "lessons": [
                 {"lesson_number": 1, "lesson_title": "Intro"},
-                {"lesson_number": 2, "lesson_title": "Basics"}
-            ]
+                {"lesson_number": 2, "lesson_title": "Basics"},
+            ],
         }
 
         tool = CourseOutlineTool(mock_store)

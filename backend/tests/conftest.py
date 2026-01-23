@@ -1,12 +1,13 @@
 """Shared fixtures and mocks for RAG chatbot tests"""
 
-import pytest
-from unittest.mock import Mock
-import sys
 import os
+import sys
+from unittest.mock import Mock
+
+import pytest
 
 # Add backend to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from vector_store import SearchResults
 
@@ -16,23 +17,17 @@ def sample_search_results():
     """Create sample successful search results"""
     return SearchResults(
         documents=["Lesson content about machine learning basics"],
-        metadata=[{
-            "course_title": "ML Fundamentals",
-            "lesson_number": 1,
-            "chunk_index": 0
-        }],
-        distances=[0.15]
+        metadata=[
+            {"course_title": "ML Fundamentals", "lesson_number": 1, "chunk_index": 0}
+        ],
+        distances=[0.15],
     )
 
 
 @pytest.fixture
 def empty_search_results():
     """Create empty search results"""
-    return SearchResults(
-        documents=[],
-        metadata=[],
-        distances=[]
-    )
+    return SearchResults(documents=[], metadata=[], distances=[])
 
 
 @pytest.fixture
@@ -56,11 +51,9 @@ def mock_vector_store_zero_results():
     """Create a mock VectorStore simulating MAX_RESULTS=0 bug"""
     store = Mock()
     store.max_results = 0
-    store.search = Mock(return_value=SearchResults(
-        documents=[],
-        metadata=[],
-        distances=[]
-    ))
+    store.search = Mock(
+        return_value=SearchResults(documents=[], metadata=[], distances=[])
+    )
     store.get_lesson_link = Mock(return_value=None)
     return store
 

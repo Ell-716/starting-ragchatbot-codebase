@@ -1,26 +1,26 @@
 """Tests for RAGSystem - main orchestrator"""
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
-import sys
 import os
+import sys
+from unittest.mock import Mock, patch
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+import pytest
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 class TestRAGSystemQuery:
     """Test RAGSystem.query() method"""
 
-    @patch('rag_system.AIGenerator')
-    @patch('rag_system.VectorStore')
-    @patch('rag_system.DocumentProcessor')
-    @patch('rag_system.SessionManager')
+    @patch("rag_system.AIGenerator")
+    @patch("rag_system.VectorStore")
+    @patch("rag_system.DocumentProcessor")
+    @patch("rag_system.SessionManager")
     def test_query_returns_response_and_sources(
         self, mock_session, mock_doc_proc, mock_vector, mock_ai
     ):
         """Test successful query returns response and sources"""
         from rag_system import RAGSystem
-        from config import Config
 
         # Setup mocks
         mock_ai_instance = Mock()
@@ -48,9 +48,9 @@ class TestRAGSystemQuery:
         rag = RAGSystem(config)
 
         # Mock the tool manager
-        rag.tool_manager.get_last_sources = Mock(return_value=[
-            {"text": "Course - Lesson 1", "link": "https://example.com"}
-        ])
+        rag.tool_manager.get_last_sources = Mock(
+            return_value=[{"text": "Course - Lesson 1", "link": "https://example.com"}]
+        )
         rag.tool_manager.reset_sources = Mock()
 
         response, sources = rag.query("What is ML?")
@@ -59,10 +59,10 @@ class TestRAGSystemQuery:
         assert len(sources) == 1
         mock_ai_instance.generate_response.assert_called_once()
 
-    @patch('rag_system.AIGenerator')
-    @patch('rag_system.VectorStore')
-    @patch('rag_system.DocumentProcessor')
-    @patch('rag_system.SessionManager')
+    @patch("rag_system.AIGenerator")
+    @patch("rag_system.VectorStore")
+    @patch("rag_system.DocumentProcessor")
+    @patch("rag_system.SessionManager")
     def test_query_with_session_uses_history(
         self, mock_session, mock_doc_proc, mock_vector, mock_ai
     ):
@@ -96,10 +96,10 @@ class TestRAGSystemQuery:
         call_args = mock_ai_instance.generate_response.call_args
         assert call_args.kwargs["conversation_history"] == "Previous chat"
 
-    @patch('rag_system.AIGenerator')
-    @patch('rag_system.VectorStore')
-    @patch('rag_system.DocumentProcessor')
-    @patch('rag_system.SessionManager')
+    @patch("rag_system.AIGenerator")
+    @patch("rag_system.VectorStore")
+    @patch("rag_system.DocumentProcessor")
+    @patch("rag_system.SessionManager")
     def test_query_updates_session_history(
         self, mock_session, mock_doc_proc, mock_vector, mock_ai
     ):
@@ -134,10 +134,10 @@ class TestRAGSystemQuery:
             "session_1", "Test question", "The answer"
         )
 
-    @patch('rag_system.AIGenerator')
-    @patch('rag_system.VectorStore')
-    @patch('rag_system.DocumentProcessor')
-    @patch('rag_system.SessionManager')
+    @patch("rag_system.AIGenerator")
+    @patch("rag_system.VectorStore")
+    @patch("rag_system.DocumentProcessor")
+    @patch("rag_system.SessionManager")
     def test_query_resets_sources_after_retrieval(
         self, mock_session, mock_doc_proc, mock_vector, mock_ai
     ):
@@ -214,10 +214,10 @@ class TestRAGSystemWithConfigBug:
 class TestRAGSystemToolIntegration:
     """Test tool integration in RAGSystem"""
 
-    @patch('rag_system.AIGenerator')
-    @patch('rag_system.VectorStore')
-    @patch('rag_system.DocumentProcessor')
-    @patch('rag_system.SessionManager')
+    @patch("rag_system.AIGenerator")
+    @patch("rag_system.VectorStore")
+    @patch("rag_system.DocumentProcessor")
+    @patch("rag_system.SessionManager")
     def test_query_passes_tools_to_ai_generator(
         self, mock_session, mock_doc_proc, mock_vector, mock_ai
     ):

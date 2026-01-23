@@ -1,12 +1,11 @@
 """Tests to validate configuration settings and catch misconfigurations"""
 
-import pytest
-import sys
 import os
+import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from config import Config, config
+from config import config
 
 
 class TestConfigValidation:
@@ -26,9 +25,9 @@ class TestConfigValidation:
 
     def test_max_results_is_reasonable(self):
         """MAX_RESULTS should be a reasonable value (1-20)"""
-        assert 1 <= config.MAX_RESULTS <= 20, (
-            f"MAX_RESULTS={config.MAX_RESULTS} is outside reasonable range 1-20"
-        )
+        assert (
+            1 <= config.MAX_RESULTS <= 20
+        ), f"MAX_RESULTS={config.MAX_RESULTS} is outside reasonable range 1-20"
 
     def test_chunk_size_is_positive(self):
         """CHUNK_SIZE must be > 0"""
